@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anomaly Detection</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+
+<h1>Anomaly Detection</h1>
+<p class="subtitle">Select a zone to view anomalies</p>
+
+<!-- 🔘 Zone Buttons -->
+<div class="zone-buttons">
+    <button onclick="loadAnomalies('A')">Zone A</button>
+    <button onclick="loadAnomalies('B')">Zone B</button>
+    <button onclick="loadAnomalies('C')">Zone C</button>
+</div>
+
+<!-- ⚠️ Anomaly Output -->
+<div id="anomaly-container" class="anomaly-container">
+    <p class="no-data">No anomalies yet</p>
+</div>
+
+<!-- 🔙 Back -->
+<div style="text-align:center; margin-top:40px;">
+    <button class="back-btn" onclick="location.href='/'">Back</button>
+</div>
+
+<script>
+function loadAnomalies(zone) {
+    fetch(`/anomaly_data?zone=${zone}`)
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById("anomaly-container");
+            container.innerHTML = "";
+
+            if (data.length === 0) {
+                container.innerHTML = "<p class='no-data'>No anomalies detected</p>";
+                return;
+            }
+
+            data.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "anomaly-card " + item.level;
+
+                card.innerHTML = `
+    <h3>${item.type}</h3>
+    <p>${item.message}</p>
+    <p class="justification">${item.justification || ""}</p>
+`;
+
+                container.appendChild(card);
+            });
+        });
+}
+</script>
+
+</body>
+</html>
